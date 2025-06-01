@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from './AuthContext'; // Adjust the path if needed
 import Cookies from 'js-cookie'; // Ensure you have js-cookie installed
-import image from '../assets/images/image.png'; // Adjust the path to your profile image
+import image from '@assets/images/image.png'; // Adjust the path to your profile image
 import toast from 'react-hot-toast';
 
 const LeftSidebar = () => {
