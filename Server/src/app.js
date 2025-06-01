@@ -6,7 +6,7 @@ const app = express()
 
 app.use(cors(
   {
-    origin: "https://socail-media-app-seven.vercel.app/",
+    origin: "https://683c33bf327b7483c2f3d47e--elaborate-meringue-a4a61e.netlify.app/",
     credentials: true
   }
 ))
