@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import LeftSidebar from '../components/LeftSidebar';
 import Navbar from '../components/Navbar';
 import { useEffect } from 'react';
-import image from "/images/image.png"
+import image from '@assets/images/image.png';
 import { Toaster, toast } from 'react-hot-toast';
 
 const ProfilePage = () => {
