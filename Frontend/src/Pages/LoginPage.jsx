@@ -33,7 +33,7 @@ const LoginPage = () => {
       console.log("Submitting login with:", formData);
       // Send a POST request to the login endpoint
 
-      const response = await fetch("${import.meta.env.VITE_APP_SERVER_URL}/users/login", {
+      const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/login`, {
         method: 'POST',
         body: JSON.stringify(formData),
         headers: {

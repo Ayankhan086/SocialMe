@@ -30,7 +30,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const getCurrentUser = async () => {
       try {
-        const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/users/current-user', {
+        const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/current-user`, {
           method: 'GET',
           credentials: 'include', // Include cookies for authentication
         });

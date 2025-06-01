@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Axios } from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import toast, { Toaster } from "react-hot-toast";
@@ -30,7 +29,7 @@ const SignUpPage = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch("${import.meta.env.VITE_APP_SERVER_URL}/users/register", {
+            const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/register`, {
                 method: 'POST',
                 body: JSON.stringify(formData),
                 headers: {

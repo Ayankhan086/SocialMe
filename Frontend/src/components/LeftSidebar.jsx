@@ -8,14 +8,14 @@ const LeftSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const page = location.pathname.replace("/", "") || "home";
-  const [user, setUser] = useState({});
+  const [User, setUser] = useState({});
 
   useEffect(() => {
     // Fetch user data from the server or context
     const fetchUserData = async () => {
       try {
 
-        const response = await fetch("${import.meta.env.VITE_APP_SERVER_URL)/users/current-user", {
+        const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/current-user`, {
           method: "GET",
           credentials: "include",
         });

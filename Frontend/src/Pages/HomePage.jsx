@@ -41,7 +41,7 @@ const HomePage = () => {
     if (newPostVideo) formData.append("video", newPostVideo);
 
     try {
-      const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/posts', {
+      const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/posts`, {
         method: 'POST',
         body: formData,
         credentials: 'include', // Include cookies for authentication
@@ -73,7 +73,7 @@ const HomePage = () => {
 
     const fetchPosts = async () => {
       try {
-        const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/posts', {
+        const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/posts`, {
           method: 'GET',
           credentials: 'include', // Include cookies for authentication
         });
@@ -96,7 +96,7 @@ const HomePage = () => {
 
     const getCurrentUser = async () => {
       try {
-        const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/users/current-user', {
+        const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/current-user`, {
           method: 'GET',
           credentials: 'include', // Include cookies for authentication
         });
@@ -117,7 +117,7 @@ const HomePage = () => {
 
     const fetchSuggestions = async () => {
       try {
-        const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/users/getUsersForSuggestion', {
+        const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/getUsersForSuggestion`, {
           method: 'GET',
           credentials: 'include', // Include cookies for authentication
         });
@@ -142,7 +142,7 @@ const HomePage = () => {
     const fetchFollowList = async () => {
 
       try {
-        const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/follows/getFollowList', {
+        const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/follows/getFollowList`, {
           method: 'GET',
           credentials: 'include', // Include cookies for authentication
         });
@@ -167,7 +167,7 @@ const HomePage = () => {
 
       try {
 
-        const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/likes/posts', {
+        const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/likes/posts`, {
           method: 'GET',
           credentials: 'include', // Include cookies for authentication
         });
@@ -205,7 +205,7 @@ const HomePage = () => {
 
   const handleUserSuggestionClick = async () => {
     try {
-      const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/users/getAllUsers', {
+      const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/getAllUsers`, {
         method: 'GET',
         credentials: 'include', // Include cookies for authentication
       });
