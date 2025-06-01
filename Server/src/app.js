@@ -6,7 +6,7 @@ const app = express()
 
 app.use(cors(
   {
-    origin: |"https://socialme086.netlify.app/",
+    origin: "https://socialme086.netlify.app/",
     credentials: true
   }
 ))
