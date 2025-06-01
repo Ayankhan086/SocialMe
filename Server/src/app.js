@@ -6,7 +6,7 @@ const app = express()
 
 app.use(cors(
   {
-    origin: "https://683c33bf327b7483c2f3d47e--elaborate-meringue-a4a61e.netlify.app/",
+    origin: process.env.CORS_ORIGIN,
     credentials: true
   }
 ))
@@ -48,6 +48,6 @@ app.use('/', (req, res) => {
   })
 })
 
-// ${import.meta.env.VITE_APP_SERVER_URL}/users/register
+// ${import.meta.env.REACT_APP_SERVER_URL}/users/register
 
 export { app }
