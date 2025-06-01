@@ -36,7 +36,7 @@ const SettingsPage = () => {
       formdata.append("username", username);
       formdata.append("email", email);
 
-      const response = await fetch("http://localhost:8000/api/v1/users/update-account", {
+      const response = await fetch("${import.meta.env.VITE_APP_SERVER_URL}/users/update-account", {
         method: "POST",
         credentials: "include",
         body: formdata
@@ -74,7 +74,7 @@ const SettingsPage = () => {
 
     try {
 
-      const response = await fetch("http://localhost:8000/api/v1/users/avatar", {
+      const response = await fetch("${import.meta.env.VITE_APP_SERVER_URL}/users/avatar", {
         method: "POST",
         credentials: "include",
         body: formdata
@@ -96,7 +96,7 @@ const SettingsPage = () => {
 
     const getCurrentUser = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/v1/users/current-user', {
+        const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/users/current-user', {
           method: 'GET',
           credentials: 'include', // Include cookies for authentication
         });

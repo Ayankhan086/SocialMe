@@ -48,6 +48,6 @@ app.use('/', (req, res) => {
   })
 })
 
-// http://localhost:8000/api/v1/users/register
+// ${import.meta.env.VITE_APP_SERVER_URL}/users/register
 
 export { app }

@@ -16,7 +16,7 @@ const LeftSidebar = () => {
     const fetchUserData = async () => {
       try {
 
-        const response = await fetch("http://localhost:8000/api/v1/users/current-user", {
+        const response = await fetch("${import.meta.env.VITE_APP_SERVER_URL}/users/current-user", {
           method: "GET",
           credentials: "include",
         });

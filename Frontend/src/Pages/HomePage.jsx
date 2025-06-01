@@ -43,7 +43,7 @@ const HomePage = () => {
     if (newPostVideo) formData.append("video", newPostVideo);
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/posts', {
+      const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/posts', {
         method: 'POST',
         body: formData,
         credentials: 'include', // Include cookies for authentication
@@ -75,7 +75,7 @@ const HomePage = () => {
 
     const fetchPosts = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/v1/posts', {
+        const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/posts', {
           method: 'GET',
           credentials: 'include', // Include cookies for authentication
         });
@@ -98,7 +98,7 @@ const HomePage = () => {
 
     const getCurrentUser = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/v1/users/current-user', {
+        const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/users/current-user', {
           method: 'GET',
           credentials: 'include', // Include cookies for authentication
         });
@@ -119,7 +119,7 @@ const HomePage = () => {
 
     const fetchSuggestions = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/v1/users/getUsersForSuggestion', {
+        const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/users/getUsersForSuggestion', {
           method: 'GET',
           credentials: 'include', // Include cookies for authentication
         });
@@ -144,7 +144,7 @@ const HomePage = () => {
     const fetchFollowList = async () => {
 
       try {
-        const response = await fetch('http://localhost:8000/api/v1/follows/getFollowList', {
+        const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/follows/getFollowList', {
           method: 'GET',
           credentials: 'include', // Include cookies for authentication
         });
@@ -169,7 +169,7 @@ const HomePage = () => {
 
       try {
 
-        const response = await fetch('http://localhost:8000/api/v1/likes/posts', {
+        const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/likes/posts', {
           method: 'GET',
           credentials: 'include', // Include cookies for authentication
         });
@@ -207,7 +207,7 @@ const HomePage = () => {
 
   const handleUserSuggestionClick = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/v1/users/getAllUsers', {
+      const response = await fetch('${import.meta.env.VITE_APP_SERVER_URL}/users/getAllUsers', {
         method: 'GET',
         credentials: 'include', // Include cookies for authentication
       });
@@ -231,7 +231,7 @@ const HomePage = () => {
   const handleFollowUser = async (userId) => {
     try {
 
-      const response = await fetch(`http://localhost:8000/api/v1/follows/${userId}`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/follows/${userId}`, {
         method: 'POST',
         credentials: 'include', // Include cookies for authentication
       });
@@ -280,7 +280,7 @@ const HomePage = () => {
 
     try {
 
-      const response = await fetch(`http://localhost:8000/api/v1/likes/toggle/p/${postId}`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/likes/toggle/p/${postId}`, {
         method: 'POST',
         credentials: 'include', // Include cookies for authentication
       });
@@ -320,7 +320,7 @@ const HomePage = () => {
 
 
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/comments/${activepostcomment}`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/comments/${activepostcomment}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -361,7 +361,7 @@ const HomePage = () => {
     console.log("Fetching comments for post ID:", postId);
     try {
 
-      const response = await fetch(`http://localhost:8000/api/v1/comments/${postId}`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/comments/${postId}`, {
         method: 'GET',
         credentials: 'include',
 

@@ -30,7 +30,7 @@ const SignUpPage = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch("http://localhost:8000/api/v1/users/register", {
+            const response = await fetch("${import.meta.env.VITE_APP_SERVER_URL}/users/register", {
                 method: 'POST',
                 body: JSON.stringify(formData),
                 headers: {
