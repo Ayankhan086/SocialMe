@@ -2,9 +2,7 @@ import React, { use, useState } from 'react';
 import Navbar from '../components/Navbar';
 import LeftSidebar from '../components/LeftSidebar';
 import { toast, Toaster } from 'react-hot-toast';
-import { useEffect } from 'react';
-import image from '../../src/assets/images/image.png'; // Assuming you have an image in this path
-import like from '../../src/assets/images/like.png'; // Assuming you have a like icon in this path
+import { useEffect } from 'react';// Assuming you have a like icon in this path
 
 
 
@@ -402,7 +400,8 @@ const HomePage = () => {
               <form onSubmit={handlePostSubmit} method='POST' encType='multipart/form-data'>
                 <div className="flex items-start space-x-3">
                   <img
-                    src={currentUser.avatar || image}
+                    src={currentUser.avatar || <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M399 384.2C376.9 345.8 335.4 320 288 320l-64 0c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z" />
+                    </svg>}
                     alt="User"
                     className="w-10 h-10 rounded-full object-cover"
                   />
@@ -464,7 +463,8 @@ const HomePage = () => {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-3">
                     <img
-                      src={post.owner.avatar || image}
+                      src={post.owner.avatar || <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M399 384.2C376.9 345.8 335.4 320 288 320l-64 0c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z" />
+                      </svg>}
                       alt={post.owner.username}
                       className="w-10 h-10 rounded-full object-cover"
                     />
@@ -497,7 +497,8 @@ const HomePage = () => {
                                 <div key={user._id} className="flex items-center justify-between p-4 hover:bg-gray-50">
                                   <div className="flex items-center space-x-3">
                                     <img
-                                      src={image || user.avatar}
+                                      src={user.avatar || <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M399 384.2C376.9 345.8 335.4 320 288 320l-64 0c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z" />
+                                      </svg>}
                                       alt={user.username}
                                       className="w-12 h-12 rounded-full object-cover"
                                     />
@@ -558,7 +559,9 @@ const HomePage = () => {
                   <div className="flex items-center justify-center flex-1 py-2 hover:bg-gray-50 rounded">
 
                     {postsLikes.some(like => like.Post._id === post._id) ? (
-                      <img onClick={() => handleLikePost(post._id)} src={like} alt="Like" className="h-5 w-5 mr-1" />
+                      <svg onClick={() => handleLikePost(post._id)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2l144 0c26.5 0 48 21.5 48 48c0 18.5-10.5 34.6-25.9 42.6C497 275.4 504 288.9 504 304c0 23.4-16.8 42.9-38.9 47.1c4.4 7.3 6.9 15.8 6.9 24.9c0 21.3-13.9 39.4-33.1 45.6c.7 3.3 1.1 6.8 1.1 10.4c0 26.5-21.5 48-48 48l-97.5 0c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3l0-38.3 0-48 0-24.9c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192l64 0c17.7 0 32 14.3 32 32l0 224c0 17.7-14.3 32-32 32l-64 0c-17.7 0-32-14.3-32-32L0 224c0-17.7 14.3-32 32-32z" />
+                      </svg>
                     ) : (
                       <svg onClick={() => handleLikePost(post._id)} xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
@@ -615,7 +618,8 @@ const HomePage = () => {
                       >
                         <div className="flex items-center space-x-3 mb-2">
                           <img
-                            src={comment.owner?.profilePicture || currentUser?.avatar || image}
+                            src={comment.owner?.profilePicture || currentUser?.avatar || <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M399 384.2C376.9 345.8 335.4 320 288 320l-64 0c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z" />
+                            </svg>}
                             alt={comment.owner?.username || currentUser?.username}
                             className="w-10 h-10 rounded-full object-cover border-2 border-blue-400 shadow"
                           />
@@ -659,7 +663,8 @@ const HomePage = () => {
                 <div key={user._id} className="flex items-center justify-between mb-4 last:mb-0">
                   <div className="flex items-center space-x-3">
                     <img
-                      src={image || user.avatar}
+                      src={user.avatar || <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M399 384.2C376.9 345.8 335.4 320 288 320l-64 0c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z"/>
+                    </svg>  }
                       alt={user.username}
                       className="w-10 h-10 rounded-full object-cover"
                     />

@@ -9,6 +9,11 @@ import LoginPage from "./Pages/LoginPage";
 import SignupPage from "./Pages/SignUpPage";
 import { AuthContext, AuthProvider } from "./components/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faCoffee, faUser } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
+library.add(faCoffee, faUser)
 
 
 

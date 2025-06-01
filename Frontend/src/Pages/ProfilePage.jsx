@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import LeftSidebar from '../components/LeftSidebar';
 import Navbar from '../components/Navbar';
 import { useEffect } from 'react';
-import image from '../../src/assets/images/image.png';
 import { Toaster, toast } from 'react-hot-toast';
 
 const ProfilePage = () => {
@@ -89,7 +88,7 @@ const ProfilePage = () => {
             <div className="bg-white rounded-lg shadow p-6 mb-4">
               <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
                 <img
-                  src={currentUser.avatar || image}
+                  src={currentUser.avatar || <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M399 384.2C376.9 345.8 335.4 320 288 320l-64 0c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z"/></svg>}
                   alt={currentUser.fullName}
                   className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-white shadow"
                 />
