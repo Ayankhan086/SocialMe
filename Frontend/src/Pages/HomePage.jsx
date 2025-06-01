@@ -3,8 +3,8 @@ import Navbar from '../components/Navbar';
 import LeftSidebar from '../components/LeftSidebar';
 import { toast, Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
-import image from '@assets/images/image.png'; // Assuming you have an image in this path
-import like from '@assets/images/like.png'; // Assuming you have a like icon in this path
+import image from '../../src/assets/images/image.png'; // Assuming you have an image in this path
+import like from '../../src/assets/images/like.png'; // Assuming you have a like icon in this path
 
 
 

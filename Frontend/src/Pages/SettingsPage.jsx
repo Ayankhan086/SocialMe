@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import LeftSidebar from '../components/LeftSidebar';
 import Navbar from '../components/Navbar';
 import { Toaster, toast } from 'react-hot-toast';
-import image from '@assets/images/image.png';
+import image from '../../src/assets/images/image.png';
 
 const SettingsPage = () => {
 
