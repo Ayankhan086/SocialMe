@@ -10,6 +10,7 @@ const ProfilePage = () => {
   const [currentUser, setCurrentUser] = useState({})
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [post, setPost] = useState([]);
+  const [likedPosts, setLikedPosts] = useState([]);
 
   const user = {
     name: 'John Smith',
@@ -40,6 +41,7 @@ const ProfilePage = () => {
           console.log("Current user:", data.data);
           setCurrentUser(data.data);
           setPost(data.data.posts)
+          setLikedPosts(data.data.likedPosts || []);
         } else {
           console.error("Failed to fetch current user");
           toast.error("Failed to fetch current user.");
@@ -74,6 +76,11 @@ const ProfilePage = () => {
     // };
     // fetchPosts();
   }, [])
+
+
+  const getlikedPosts = async (req, res) => {
+
+  }
 
 
   return (
@@ -161,7 +168,7 @@ const ProfilePage = () => {
                 </button>
                 <button
                   className={`flex-1 py-3 px-4 text-center font-medium ${activeTab === 'like' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-500 hover:text-gray-700'}`}
-                  onClick={() => setActiveTab('like')}
+                  onClick={() => { setActiveTab('like'); }}
                 >
                   Like
                 </button>
@@ -212,17 +219,60 @@ const ProfilePage = () => {
               </div>
             )}
 
+
             {activeTab === 'like' && (
-              <div className="bg-white rounded-lg shadow p-6 text-center">
-                <div className="mx-auto w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-1">No saved posts</h3>
-                <p className="text-gray-500">
-                  Photos and videos that you want to see again
-                </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {likedPosts && likedPosts.length > 0 ? (
+                  likedPosts
+                    .filter(post => post.image || post.videoFile)
+                    .map(post => (
+                      <div key={post._id} className="relative group cursor-pointer">
+                        {post.image && (
+                          <img
+                            src={post.image}
+                            alt="Liked Post"
+                            className="w-full h-64 object-cover rounded-lg"
+                          />
+                        )}
+                        {post.videoFile && (
+                          <video
+                            src={post.videoFile}
+                            alt="Liked Post"
+                            className="w-full h-64 object-cover rounded-lg"
+                            controls
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200">
+                          <div className="flex space-x-4 text-white">
+                            <span className="flex items-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                              </svg>
+                              {post.likesCount || 0}
+                            </span>
+                            <span className="flex items-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                              </svg>
+                              {post.commentsCount || 0}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                ) : (
+                  <div className="col-span-full bg-white rounded-lg shadow p-6 text-center">
+                    <div className="mx-auto w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-1">No liked posts</h3>
+                    <p className="text-gray-500">
+                      Photos and videos that you have liked will appear here.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 

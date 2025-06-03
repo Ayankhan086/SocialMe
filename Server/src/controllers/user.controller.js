@@ -318,11 +318,29 @@ const getCurrentUser = asyncHandler(async (req, res) => {
                 as: "posts"
             }
         },
+        // Add lookup for liked posts
+        {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "likedBy",
+                as: "likedPostsInfo"
+            }
+        },
+        {
+            $lookup: {
+                from: "posts",
+                localField: "likedPostsInfo.Post",
+                foreignField: "_id",
+                as: "likedPosts"
+            }
+        },
         {
             $addFields: {
                 followersCount: { $size: "$followers" },
                 followingCount: { $size: "$following" },
-                postsCount: { $size: "$posts" }
+                postsCount: { $size: "$posts" },
+                likedPostsCount: { $size: "$likedPosts" }
             }
         },
         {
@@ -332,7 +350,8 @@ const getCurrentUser = asyncHandler(async (req, res) => {
                 "followers.password": 0,
                 "followers.refreshToken": 0,
                 "following.password": 0,
-                "following.refreshToken": 0
+                "following.refreshToken": 0,
+                likedPostsInfo: 0 // Hide the intermediate lookup array
             }
         }
     ]);
@@ -341,8 +360,6 @@ const getCurrentUser = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User not found");
     }
 
-
-
     return res
         .status(200)
         .json(new ApiResponse(
@@ -350,6 +367,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
             userData[0],
             "User fetched successfully"
         ))
+
 })
 
 const updateAccountDetails = asyncHandler(async (req, res) => {

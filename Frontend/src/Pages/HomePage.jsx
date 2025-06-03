@@ -1,9 +1,12 @@
-import React, { use, useState } from 'react';
+import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import LeftSidebar from '../components/LeftSidebar';
 import { toast, Toaster } from 'react-hot-toast';
-import { useEffect } from 'react';// Assuming you have a like icon in this path
+import { useEffect } from 'react';
 import image from "../../src/assets/images/image.svg"
+import { useContext } from 'react';
+import { AuthContext } from '../components/AuthContext';
+import { SocketContext } from '../components/SocketContext';
 
 
 
@@ -27,6 +30,8 @@ const HomePage = () => {
   const [comments, setComments] = useState([]); // State to manage comments for a post
   const [activepostcomment, setActivepostcomment] = useState(''); // State to manage active post for comments
   const [currentUser, setCurrentUser] = useState({});
+  const { setCUser } = useContext(AuthContext)
+  const { onlineUsers } = useContext(SocketContext)
 
   const handlePostSubmit = async (e) => {
     e.preventDefault();
@@ -81,8 +86,8 @@ const HomePage = () => {
         if (response.ok) {
 
           const data = await response.json();
-          console.log("Fetched posts:", data.data.docs);
-          setPosts(data.data.docs);
+          console.log("Fetched posts:", data.data);
+          setPosts(data.data);
 
         } else {
           console.error("Failed to fetch posts");
@@ -95,6 +100,9 @@ const HomePage = () => {
     };
     fetchPosts();
 
+
+
+
     const getCurrentUser = async () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/current-user`, {
@@ -105,6 +113,7 @@ const HomePage = () => {
           const data = await response.json();
           console.log("Current user:", data.data);
           setCurrentUser(data.data);
+          setCUser(data.data)
         } else {
           console.error("Failed to fetch current user");
           toast.error("Failed to fetch current user.");
@@ -197,6 +206,8 @@ const HomePage = () => {
     console.log("Liked Posts : ", postsLikes);
 
   }, [follow_List, postsLikes]);
+
+
 
 
 
@@ -401,7 +412,7 @@ const HomePage = () => {
               <form onSubmit={handlePostSubmit} method='POST' encType='multipart/form-data'>
                 <div className="flex items-start space-x-3">
                   <img
-                    src={currentUser.avatar || image }
+                    src={currentUser.avatar || image}
                     alt="User"
                     className="w-10 h-10 rounded-full object-cover"
                   />

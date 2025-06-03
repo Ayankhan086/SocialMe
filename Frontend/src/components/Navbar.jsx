@@ -1,27 +1,25 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { AuthContext } from './AuthContext'; // Adjust the import path as necessary
 import { useNavigate, useLocation } from 'react-router-dom';
 import cookie from 'js-cookie';
-import HomePage from "../Pages/HomePage";
-import MessagesPage from "../Pages/MessagesPage";
-import ProfilePage from "../Pages/ProfilePage";
-import SettingsPage from "../Pages/SettingsPage";
-import LoginPage from "../Pages/LoginPage";
-import SignupPage from "../Pages/SignUpPage";
+import { SocketContext } from './SocketContext';
+import { AuthContext } from './AuthContext';
 
 
 const Navbar = () => {
 
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const { accessToken, setAccessToken } = useContext(AuthContext);
+  const { disconnectSocket, Socket } = useContext(SocketContext)
+  const { setCUser } = useContext(AuthContext)
 
   const navigate = useNavigate();
   const location = useLocation();
   const page = location.pathname.replace("/", "") || "home";
 
+
   const handleLogout = async () => {
+    disconnectSocket()
     cookie.remove("accessToken"); // Remove the token from cookies
+    cookie.remove("CurrentUserId")
+    setCUser(null)
     navigate("/login"); // Optionally redirect to login
   };
 

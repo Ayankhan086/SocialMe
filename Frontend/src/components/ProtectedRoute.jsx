@@ -5,7 +5,10 @@ import Cookie from "js-cookie";
 
 const ProtectedRoute = ({ children }) => {
 
-  if (!(Cookie.get("accessToken"))) {
+  const {cUser} = useContext(AuthContext)
+
+
+  if (!cUser) {
     return <Navigate to="/login" replace />;
   }
 

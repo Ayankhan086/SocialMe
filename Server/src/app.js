@@ -1,18 +1,30 @@
 import express from "express"
+import http from "http"
 import cors from "cors"
 import cookieParser from "cookie-parser"
+import { Server } from "socket.io"
+
 
 const app = express()
+const server = http.createServer(app)
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:5173", "http://localhost:5174"],
+    credentials: true,
+    allowedHeaders: ["cookie", "authorization"]
+  },
+  path: "/api/v1/socket.io"
+})
 
 app.use(cors(
   {
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true
   }
 ))
 
-app.use(express.json({limit: "16kb"}))
-app.use(express.urlencoded({extended: true, limit: "16kb"}))
+app.use(express.json({ limit: "16kb" }))
+app.use(express.urlencoded({ extended: true, limit: "16kb" }))
 app.use(express.static("public"))
 app.use(cookieParser())
 process.on("unhandledRejection", (err) => {
@@ -30,6 +42,7 @@ import commentRouter from "./routes/comment.routes.js"
 import likeRouter from "./routes/like.routes.js"
 import playlistRouter from "./routes/playlist.routes.js"
 import dashboardRouter from "./routes/dashboard.routes.js"
+import messageRouter from "./routes/message.routes.js"
 
 //routes declaration
 app.use("/api/v1/healthcheck", healthcheckRouter)
@@ -41,13 +54,70 @@ app.use("/api/v1/comments", commentRouter)
 app.use("/api/v1/likes", likeRouter)
 app.use("/api/v1/playlist", playlistRouter)
 app.use("/api/v1/dashboard", dashboardRouter)
+app.use("/api/v1/messages", messageRouter)
+
 app.use('/', (req, res) => {
   res.send({
-    activeStatus:true,
+    activeStatus: true,
     error: false
   })
 })
 
-// ${import.meta.env.REACT_APP_SERVER_URL}/users/register
+app.use((req, res, next) => {
+  console.log("Incoming headers:", req.headers);
+  next();
+});
 
-export { app }
+app.set("io", io);
+
+
+// Socket Io Logics 
+
+export function getRecieverSocketId (userId) {
+  return userSocketMap[userId];
+}
+
+const userSocketMap = {};
+
+const mainNamespace = io.of("/");
+
+try {
+  mainNamespace.on("connection", (socket) => {
+    console.log("New connection:", socket.id);
+
+    const userId = socket.handshake.query.userId;
+    console.log("User ID:", userId);
+    
+    if (userId && userId !== "undefined") {
+      if (!userSocketMap[userId]) {
+        userSocketMap[userId] = new Set();
+      }
+      userSocketMap[userId].add(socket.id);
+      console.log("Online users:", Object.keys(userSocketMap));
+      
+      // Send online users to all connected clients
+      mainNamespace.emit("getOnlineUsers", Object.keys(userSocketMap));
+    }
+
+    // Moved disconnect outside the else block
+    socket.on("disconnect", () => {
+      console.log("User disconnected:", socket.id);
+
+      if (userId && userSocketMap[userId]) {
+        userSocketMap[userId].delete(socket.id);
+        if (userSocketMap[userId].size === 0) {
+          delete userSocketMap[userId];
+        }
+        mainNamespace.emit("getOnlineUsers", Object.keys(userSocketMap));
+      }
+    });
+  });
+
+} catch (error) {
+  mainNamespace.emit("connect_error", error);
+}
+
+
+
+
+export { app, io, server }

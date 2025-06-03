@@ -5,6 +5,7 @@ import { AuthContext } from "../components/AuthContext";
 import Navbar from "../components/Navbar";
 import toast, { Toaster } from "react-hot-toast";
 import cookie from "js-cookie";
+import { SocketContext } from "../components/SocketContext"
 
 
 const LoginPage = () => {
@@ -24,7 +25,8 @@ const LoginPage = () => {
     }));
   };
 
-  const { setAccessToken } = useContext(AuthContext);
+  const { setCUser, cUser } = useContext(AuthContext);
+  const { connectSocket, onlineUsers } = useContext(SocketContext)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,6 +34,7 @@ const LoginPage = () => {
 
       console.log("Submitting login with:", formData);
       // Send a POST request to the login endpoint
+
 
       const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/login`, {
         method: 'POST',
@@ -41,23 +44,25 @@ const LoginPage = () => {
         }
       });
 
-      console.log("Login response:", response);
 
 
       if (response.ok) {
 
-        
+
         const data = await response.json();
 
-        setAccessToken(data.data.accessToken) 
+        setCUser(data.data)
+        
 
         if (data.data.accessToken) {
-           cookie.set("accessToken", data.data.accessToken, { expires: 7, secure: true }); // Store token in cookie
-           console.log("Access token set in cookie:", data.data.accessToken);
+          cookie.set("accessToken", data.data.accessToken, { expires: 7, secure: true }); // Store token in cookie
+          cookie.set("CurrentUserId", data.data.user._id, { expires: 7, secure: true })
         }
 
-        toast.success("Login successful! Redirecting...");
+        connectSocket();
+        
         navigate("/");
+
       }
       else {
         toast.error("Invalid email or password.");
@@ -66,9 +71,15 @@ const LoginPage = () => {
     } catch (error) {
 
       toast.error("Login failed. Please try again.");
+      console.log("Error : ", error);
+
 
     }
   };
+
+  
+
+
 
 
 

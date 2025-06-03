@@ -51,20 +51,14 @@ const createPost = asyncHandler(async (req, res) => {
 
 // Get all posts with pagination
 const getAllPosts = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, userId } = req.query;
+    let { userId } = req.query;
 
-    const options = {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        sort: { createdAt: -1 }
-    };
-
-    let query = { isPublished: true };
+    let query = {  };
     if (userId) {
         query.owner = userId;
     }
 
-    const posts = await Post.aggregatePaginate(Post.aggregate([
+    const posts = await Post.aggregate([
         { $match: query },
         {
             $lookup: {
@@ -122,8 +116,9 @@ const getAllPosts = asyncHandler(async (req, res) => {
                 },
                 createdAt: 1
             }
-        }
-    ]), options);
+        },
+        { $sort: { createdAt: -1 } }
+    ]);
 
     return res.status(200).json(
         new ApiResponse(200, posts, "Posts fetched successfully")
