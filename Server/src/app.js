@@ -3,7 +3,7 @@ import http from "http"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import { Server } from "socket.io"
-
+import path from "path"
 
 const app = express()
 const server = http.createServer(app)
@@ -23,9 +23,10 @@ app.use(cors(
   }
 ))
 
+const __dirname = path.resolve();
+
 app.use(express.json({ limit: "16kb" }))
 app.use(express.urlencoded({ extended: true, limit: "16kb" }))
-app.use(express.static("public"))
 app.use(cookieParser())
 process.on("unhandledRejection", (err) => {
   console.error("Unhandled Rejection:", err);
@@ -70,10 +71,22 @@ app.use((req, res, next) => {
 
 app.set("io", io);
 
+if (process.env.NODE_ENV === "production") {
+
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+  app.get("*", (req,res) => {
+    res.sendFile(path.join(__dirname, "../Frontend" , "dist" , "index.html"))
+  })
+  
+}
+
+app.use(express.static("public"))
+
 
 // Socket Io Logics 
 
-export function getRecieverSocketId (userId) {
+export function getRecieverSocketId(userId) {
   return userSocketMap[userId];
 }
 
@@ -87,14 +100,14 @@ try {
 
     const userId = socket.handshake.query.userId;
     console.log("User ID:", userId);
-    
+
     if (userId && userId !== "undefined") {
       if (!userSocketMap[userId]) {
         userSocketMap[userId] = new Set();
       }
       userSocketMap[userId].add(socket.id);
       console.log("Online users:", Object.keys(userSocketMap));
-      
+
       // Send online users to all connected clients
       mainNamespace.emit("getOnlineUsers", Object.keys(userSocketMap));
     }
