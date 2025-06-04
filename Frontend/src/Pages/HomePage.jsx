@@ -31,7 +31,7 @@ const HomePage = () => {
   const [activepostcomment, setActivepostcomment] = useState(''); // State to manage active post for comments
   const [currentUser, setCurrentUser] = useState({});
   const { setCUser } = useContext(AuthContext)
-  const { onlineUsers } = useContext(SocketContext)
+  const { onlineUsers, connectSocket } = useContext(SocketContext)
 
   const handlePostSubmit = async (e) => {
     e.preventDefault();
@@ -76,6 +76,9 @@ const HomePage = () => {
 
 
   useEffect(() => {
+
+    connectSocket();
+    
 
     const fetchPosts = async () => {
       try {
