@@ -137,20 +137,16 @@ const MessagesPage = () => {
 
     useEffect(() => {
         if (
-            Array.isArray(newMessages) &&
-            newMessages.length > 0 &&
-            activeConversation
+            newMessages &&
+            activeConversation &&
+            (
+                newMessages.senderId === activeConversation._id ||
+                newMessages.receiverId === activeConversation._id
+            )
         ) {
-            newMessages.forEach(msg => {
-                if (
-                    msg.senderId === activeConversation._id ||
-                    msg.receiverId === activeConversation._id
-                ) {
-                    setMessages(prev => {
-                        if (prev.some(m => m._id === msg._id)) return prev;
-                        return [...prev, msg];
-                    });
-                }
+            setMessages(prev => {
+                if (prev.some(m => m._id === newMessages._id)) return prev;
+                return [...prev, newMessages];
             });
         }
     }, [newMessages, activeConversation]);

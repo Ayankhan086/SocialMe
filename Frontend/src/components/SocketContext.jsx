@@ -8,7 +8,7 @@ export const SocketProvider = ({ children }) => {
 
   const [onlineUsers, setOnlineUsers] = useState([]);
   const socketRef = useRef(null);
-  const [newMessages, setNewMessages] = useState([])
+  const [newMessages, setNewMessages] = useState(null)
 
   useEffect(()=>{
       console.log("New Messages ", newMessages);
@@ -53,7 +53,7 @@ export const SocketProvider = ({ children }) => {
     });
 
     socketRef.current.on("newMessage", (message) => {
-      setNewMessages(prev => [...prev, message])
+      setNewMessages(message);
     })
 
     
