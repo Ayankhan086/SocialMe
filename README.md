@@ -17,7 +17,7 @@ A full-featured social media application with real-time interactions, built with
 
 **Frontend:**
 ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
-![Zustand](https://img.shields.io/badge/Zustand-764ABC?style=flat&logo=redux&logoColor=white)
+![Zustand](https://img.shields.io/badge/Zustand-764ABC?style=flat&logo=zustand&logoColor=white)
 ![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=flat&logo=socket.io&logoColor=white)
 
 **Backend:**
