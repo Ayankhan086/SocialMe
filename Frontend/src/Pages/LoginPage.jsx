@@ -61,7 +61,7 @@ const LoginPage = () => {
 
         connectSocket();
         
-        navigate("/");
+        navigate("/home");
 
       }
       else {

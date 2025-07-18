@@ -21,10 +21,10 @@ function AppLayout() {
           <div className="flex min-h-screen">
             <main className="flex-1 ">
               <Routes>
-                <Route path="/login" element={<LoginPage />} />
+                <Route path="/" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
                 <Route
-                  path="/"
+                  path="/home"
                   element={
                     <ProtectedRoute>
                       <HomePage />

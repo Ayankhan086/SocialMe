@@ -48,7 +48,7 @@ const SignUpPage = () => {
 
             toast.success('Signup successful! Redirecting to login...');
 
-            navigate('/login', {
+            navigate('/', {
                 state: { message: 'Signup successful! Please login.' },
                 replace: true
             });

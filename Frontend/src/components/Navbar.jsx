@@ -20,7 +20,7 @@ const Navbar = () => {
     cookie.remove("accessToken"); // Remove the token from cookies
     cookie.remove("CurrentUserId")
     setCUser(null)
-    navigate("/login"); // Optionally redirect to login
+    navigate("/"); // Optionally redirect to login
   };
 
 
