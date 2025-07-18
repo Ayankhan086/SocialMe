@@ -75,12 +75,10 @@ const ProfilePage = () => {
     //   }
     // };
     // fetchPosts();
-  }, [])
+  }, []);
 
 
-  const getlikedPosts = async (req, res) => {
 
-  }
 
 
   return (

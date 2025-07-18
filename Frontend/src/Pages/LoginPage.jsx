@@ -56,7 +56,7 @@ const LoginPage = () => {
 
         if (data.data.accessToken) {
           cookie.set("accessToken", data.data.accessToken, { expires: 7, secure: true }); // Store token in cookie
-          cookie.set("CurrentUserId", data.data.user._id, { expires: 7, secure: true })
+          // cookie.set("CurrentUserId", data.data.user._id, { expires: 7, secure: true })
         }
 
         connectSocket();

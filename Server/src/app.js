@@ -9,7 +9,7 @@ const server = http.createServer(app)
 
 const io = new Server(server, {
   cors: {
-    origin: "https://social-me-n9nv.vercel.app",
+    origin: ["https://social-me-n9nv.vercel.app", "http://localhost:5173"],
     credentials: true,
     allowedHeaders: ["cookie", "authorization"]
   },
@@ -18,7 +18,7 @@ const io = new Server(server, {
 
 app.use(cors(
   {
-    origin: "https://social-me-n9nv.vercel.app",
+    origin: ["https://social-me-n9nv.vercel.app", "http://localhost:5173"],
     credentials: true
   }
 ))

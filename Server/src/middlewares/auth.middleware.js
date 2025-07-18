@@ -5,9 +5,7 @@ import { User } from "../models/user.model.js";
 
 export const verifyJWT = asyncHandler(async(req, _, next) => {
     try {
-        const token = req.cookies?.accessToken
-        
-        console.log(token);
+        const token = req.cookies?.accessToken || req.headers.cookie.replace("accessToken=", "")
 
         if (!token) {
             throw new ApiError(401, "Unauthorized request")
@@ -17,7 +15,6 @@ export const verifyJWT = asyncHandler(async(req, _, next) => {
     
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
     
-        console.log("Decoded Token:", decodedToken);
         
         const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
 

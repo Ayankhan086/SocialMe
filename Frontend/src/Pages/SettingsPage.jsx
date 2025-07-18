@@ -3,6 +3,7 @@ import LeftSidebar from '../components/LeftSidebar';
 import Navbar from '../components/Navbar';
 import { Toaster, toast } from 'react-hot-toast';
 import image from "../../src/assets/images/image.svg"
+import Cookie from 'js-cookie';
 
 const SettingsPage = () => {
 
@@ -98,7 +99,8 @@ const SettingsPage = () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/current-user`, {
           method: 'GET',
-          credentials: 'include', // Include cookies for authentication
+          credentials: 'include', 
+authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
         });
         if (response.ok) {
           const data = await response.json();

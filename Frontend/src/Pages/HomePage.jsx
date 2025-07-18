@@ -7,6 +7,7 @@ import image from "../../src/assets/images/image.svg"
 import { useContext } from 'react';
 import { AuthContext } from '../components/AuthContext';
 import { SocketContext } from '../components/SocketContext';
+import Cookie from 'js-cookie';
 
 
 
@@ -50,7 +51,8 @@ const HomePage = () => {
       const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/posts`, {
         method: 'POST',
         body: formData,
-        credentials: 'include', // Include cookies for authentication
+        credentials: 'include',
+        authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
         // Do NOT set Content-Type, browser will set it for FormData
       });
 
@@ -78,12 +80,13 @@ const HomePage = () => {
   useEffect(() => {
 
     connectSocket();
-    
+
 
     const fetchPosts = async () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/posts`, {
           method: 'GET',
+          authorization: `Bearer ${Cookie.get('accessToken')}`, // Assuming the access token is stored in a cookie
           credentials: 'include', // Include cookies for authentication
         });
         if (response.ok) {
@@ -110,7 +113,8 @@ const HomePage = () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/current-user`, {
           method: 'GET',
-          credentials: 'include', // Include cookies for authentication
+          credentials: 'include',
+          authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
         });
         if (response.ok) {
           const data = await response.json();
@@ -132,7 +136,8 @@ const HomePage = () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/getUsersForSuggestion`, {
           method: 'GET',
-          credentials: 'include', // Include cookies for authentication
+          credentials: 'include',
+          authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
         });
 
         if (response.ok) {
@@ -157,7 +162,8 @@ const HomePage = () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/follows/getFollowList`, {
           method: 'GET',
-          credentials: 'include', // Include cookies for authentication
+          credentials: 'include',
+          authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
         });
 
         if (response.ok) {
@@ -182,7 +188,8 @@ const HomePage = () => {
 
         const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/likes/posts`, {
           method: 'GET',
-          credentials: 'include', // Include cookies for authentication
+          credentials: 'include',
+          authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
         });
 
         if (response.ok) {
@@ -222,7 +229,8 @@ const HomePage = () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/getAllUsers`, {
         method: 'GET',
-        credentials: 'include', // Include cookies for authentication
+        credentials: 'include',
+        authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
       });
 
       if (response.ok) {
@@ -246,7 +254,8 @@ const HomePage = () => {
 
       const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/follows/${userId}`, {
         method: 'POST',
-        credentials: 'include', // Include cookies for authentication
+        credentials: 'include',
+        authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
       });
 
       if (response.ok) {
@@ -295,7 +304,8 @@ const HomePage = () => {
 
       const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/likes/toggle/p/${postId}`, {
         method: 'POST',
-        credentials: 'include', // Include cookies for authentication
+        credentials: 'include',
+        authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
       });
 
       if (response.ok) {
