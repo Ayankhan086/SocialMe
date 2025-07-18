@@ -18,7 +18,7 @@ const io = new Server(server, {
 
 app.use(cors(
   {
-    origin: ["http://localhost:5173", "http://localhost:5174", process.env.CORS_ORIGIN],
+    origin: ["https://social-me-n9nv.vercel.app"],
     credentials: true
   }
 ))
