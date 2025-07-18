@@ -8,7 +8,7 @@ const ProtectedRoute = ({ children }) => {
   const {cUser} = useContext(AuthContext)
 
 
-  if (!cUser) {
+  if (!(Cookie.get("accessToken"))) {
     return <Navigate to="/" replace />;
   }
 
