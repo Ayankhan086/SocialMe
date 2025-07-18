@@ -48,7 +48,7 @@ const Navbar = () => {
               if (!(cookie.get("accessToken"))) {
                 return (
                   <>
-                    <button onClick={() => navigate("/login")} className={`px-3 py-2 rounded text-left ${page === "login" ? "bg-blue-500 text-white" : "hover:bg-blue-100"}`}>Login</button>
+                    <button onClick={() => navigate("/")} className={`px-3 py-2 rounded text-left ${page === "login" ? "bg-blue-500 text-white" : "hover:bg-blue-100"}`}>Login</button>
                     <button onClick={() => navigate("/signup")} className={`px-3 py-2 rounded text-left ${page === "signup" ? "bg-blue-500 text-white" : "hover:bg-blue-100"}`}>Signup</button>
                   </>
                 );
