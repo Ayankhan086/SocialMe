@@ -1,7 +1,7 @@
 {
-  "name": "chai-backend",
+  "name": "Social Me",
   "version": "1.0.0",
-  "description": "a backend at chai aur code channel - youtube",
+  "description": "a backend for Social Me web app",
   "type": "module",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "backend",
     "SocialMe"
   ],
-  "author": "Hitesh Choudhary",
+  "author": "Muhammad Ayan",
   "license": "ISC",
   "devDependencies": {
     "nodemon": "^3.1.9",
