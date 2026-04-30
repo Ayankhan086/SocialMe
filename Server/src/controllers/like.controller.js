@@ -7,9 +7,7 @@ import {Post} from "../models/post.model.js"
 
 const togglePostLike = asyncHandler(async (req, res) => {
     const {Id} = req.params
-    //TODO: toggle like on video
-
-    console.log("Toggle like on post with ID:", Id);
+    //TODO: toggle like on video 
 
 
     const post = await Post.findById(Id);
@@ -29,6 +27,10 @@ const togglePostLike = asyncHandler(async (req, res) => {
             Post: Id,
             likedBy: req.user._id
         })
+        const io = req.app.get("io");
+        if (io) {
+            io.emit("postLikeToggled", { postId: Id, likedBy: req.user._id, action: "unlike" });
+        }
         return res.status(200).json(new ApiResponse("Like removed successfully"))
     }
 
@@ -41,6 +43,11 @@ const togglePostLike = asyncHandler(async (req, res) => {
 
     if (!newLike) {
         throw new ApiError(500, "Failed to like the post")
+    }
+
+    const io = req.app.get("io");
+    if (io) {
+        io.emit("postLikeToggled", { postId: Id, likedBy: req.user._id, action: "like" });
     }
 
     return res.status(201).json(new ApiResponse(201, newLike, "Post liked successfully"))

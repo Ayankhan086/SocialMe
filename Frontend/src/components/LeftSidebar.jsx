@@ -23,7 +23,7 @@ const LeftSidebar = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("User data fetched:", data.data);
+         
           setUser(data.data);
         } else {
           console.error("Failed to fetch user data");
@@ -31,7 +31,7 @@ const LeftSidebar = () => {
         }
 
       } catch (error) {
-        console.log("Error fetching user data:", error);
+        
         toast.error("Failed to load user data");
       }
 

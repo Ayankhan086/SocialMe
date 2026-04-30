@@ -4,6 +4,7 @@ import { Follow } from "../models/follow.model.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
+import { getRecieverSocketId } from "../app.js"
 
 
 // TODO: toggle follow
@@ -16,8 +17,7 @@ const toggleFollow = asyncHandler(async (req, res) => {
         following: userId,
         follower: followerId
     })
-
-    console.log(existingFollow);
+ 
 
 
     if (existingFollow.length > 0) {
@@ -36,6 +36,16 @@ const toggleFollow = asyncHandler(async (req, res) => {
     // Update follower/following counts (optimistic update)
     await User.findByIdAndUpdate(followerId, { $inc: { followingCount: 1 } });
     await User.findByIdAndUpdate(userId, { $inc: { followersCount: 1 } });
+
+    const io = req.app.get("io");
+    if (io) {
+        const receiverSocketIds = getRecieverSocketId(userId);
+        if (receiverSocketIds && receiverSocketIds.size > 0) {
+            for (const socketId of receiverSocketIds) {
+                io.to(socketId).emit("newFollower", { followerId: followerId });
+            }
+        }
+    }
 
     return res.status(200).json(
         new ApiResponse(200, newFollow, "User is being followed successfully")
@@ -77,7 +87,7 @@ const followList = asyncHandler(async (req, res) => {
     }).select("following")
 
     const followedUserIds = followedUsers.map(follow => follow.following)
-    console.log(followedUserIds);
+    
 
     return res.status(200).json(
         new ApiResponse(200, followedUserIds, "Followed users fetched successfully")

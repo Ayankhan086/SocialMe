@@ -4,6 +4,8 @@ import Navbar from '../components/Navbar';
 import { useEffect } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import image from "../../src/assets/images/image.svg"
+import Cookie from 'js-cookie';
+import MobileNav from '../components/MobileNav';
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('posts');
@@ -12,36 +14,19 @@ const ProfilePage = () => {
   const [post, setPost] = useState([]);
   const [likedPosts, setLikedPosts] = useState([]);
 
-  const user = {
-    name: 'John Smith',
-    username: 'johnsmith',
-    avatar: 'https://randomuser.me/api/portraits/men/10.jpg',
-    bio: 'Digital creator | Photography enthusiast | Travel lover',
-    posts: 142,
-    followers: 1042,
-    following: 287,
-    isVerified: true
-  };
-
-  const posts = [
-    { id: 1, image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb', likes: 124, comments: 14 },
-    { id: 2, image: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308', likes: 89, comments: 5 },
-    // More posts...
-  ];
-
   useEffect(() => {
     const getCurrentUser = async () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/current-user`, {
           method: 'GET',
-          credentials: 'include', // Include cookies for authentication
+          credentials: 'include',
+          headers: { 'Authorization': `Bearer ${Cookie.get('accessToken')}` }, // Include cookies for authentication
         });
         if (response.ok) {
-          const data = await response.json();
-          console.log("Current user:", data.data);
-          setCurrentUser(data.data);
-          setPost(data.data.posts)
-          setLikedPosts(data.data.likedPosts || []);
+          const data = await response.json(); 
+          setCurrentUser(data.data || {});
+          setPost(data.data?.posts || []);
+          setLikedPosts(data.data?.likedPosts || []);
         } else {
           console.error("Failed to fetch current user");
           toast.error("Failed to fetch current user.");
@@ -61,8 +46,7 @@ const ProfilePage = () => {
     //     });
     //     if (response.ok) {
 
-    //       const data = await response.json();
-    //       console.log("Fetched posts:", data.data);
+    //       const data = await response.json(); 
     //       setPost(data.data);
 
     //     } else {
@@ -87,7 +71,9 @@ const ProfilePage = () => {
       <Navbar />
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-6">
-          <LeftSidebar />
+          <div className="hidden md:block">
+            <LeftSidebar />
+          </div>
           {/* Main profile content */}
           <div className="flex-1">
             {/* Profile header */}
@@ -176,44 +162,58 @@ const ProfilePage = () => {
             {/* Profile content */}
             {activeTab === 'posts' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {post
-                  .filter(post => post.image || post.videoFile) // Only show posts with image or video
-                  .map(post => (
-                    <div key={post._id} className="relative group cursor-pointer">
-                      {post.image && (
-                        <img
-                          src={post.image}
-                          alt="Post"
-                          className="w-full h-64 object-cover rounded-lg"
-                        />
+                {post && post.length > 0 ? (
+                  post
+                    .filter(post => post.image || post.videoFile) // Only show posts with image or video
+                    .map(post => (
+                      <div key={post._id} className="relative group cursor-pointer">
+                        {post.image && (
+                          <img
+                            src={post.image}
+                            alt="Post"
+                            className="w-full h-64 object-cover rounded-lg"
+                          />
 
-                      )}
-                      {post.videoFile && (
-                        <video
-                          src={post.videoFile}
-                          alt="Post"
-                          className="w-full h-64 object-cover rounded-lg"
-                        />
-                      )}
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200">
-                        <div className="flex space-x-4 text-white">
-                          <span className="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
-                            </svg>
-                            {post.likesCount}
-                          </span>
-                          <span className="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                            </svg>
-                            {post.commentsCount}
-                          </span>
+                        )}
+                        {post.videoFile && (
+                          <video
+                            src={post.videoFile}
+                            alt="Post"
+                            className="w-full h-64 object-cover rounded-lg"
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200">
+                          <div className="flex space-x-4 text-white">
+                            <span className="flex items-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                              </svg>
+                              {post.likesCount || 0}
+                            </span>
+                            <span className="flex items-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                              </svg>
+                              {post.commentsCount || 0}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                  ))}
+                    ))
+                ) : (
+                  <div className="col-span-full bg-white rounded-lg shadow p-6 text-center">
+                    <div className="mx-auto w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-1">No posts yet</h3>
+                    <p className="text-gray-500">
+                      Photos and videos that you share will appear here.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -277,6 +277,7 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+      <MobileNav />
     </div>
   );
 };

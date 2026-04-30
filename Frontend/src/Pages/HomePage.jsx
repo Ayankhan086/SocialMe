@@ -8,6 +8,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../components/AuthContext';
 import { SocketContext } from '../components/SocketContext';
 import Cookie from 'js-cookie';
+import MobileNav from '../components/MobileNav';
 
 
 
@@ -32,7 +33,7 @@ const HomePage = () => {
   const [activepostcomment, setActivepostcomment] = useState(''); // State to manage active post for comments
   const [currentUser, setCurrentUser] = useState({});
   const { setCUser } = useContext(AuthContext)
-  const { onlineUsers, connectSocket } = useContext(SocketContext)
+  const { onlineUsers, connectSocket, newPost, postLikeEvent, newCommentEvent } = useContext(SocketContext)
 
   const handlePostSubmit = async (e) => {
     e.preventDefault();
@@ -52,14 +53,18 @@ const HomePage = () => {
         method: 'POST',
         body: formData,
         credentials: 'include',
-        authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
+        headers: {
+          'Authorization': `Bearer ${Cookie.get('accessToken')}`,
+        },// Include cookies for authentication
         // Do NOT set Content-Type, browser will set it for FormData
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Post created:", data);
-        setPosts(prevPosts => [data.data, ...prevPosts]); // Optional: Delay to allow the UI to update before resetting form fields 
+        setPosts(prevPosts => {
+          if (prevPosts.some(p => p._id === data.data._id)) return prevPosts;
+          return [data.data, ...prevPosts];
+        }); // Prevent duplicates if socket adds it first
         // Reset form fields
         setNewPostContent("");
         setNewPostImage(null);
@@ -78,6 +83,55 @@ const HomePage = () => {
 
 
   useEffect(() => {
+    if (newPost) {
+      setPosts(prevPosts => {
+        // Prevent duplicate posts (e.g. if we submitted it ourselves)
+        if (prevPosts.some(p => p._id === newPost._id)) return prevPosts;
+        return [newPost, ...prevPosts];
+      });
+    }
+  }, [newPost]);
+
+  useEffect(() => {
+    if (postLikeEvent) {
+      const { postId, likedBy, action } = postLikeEvent;
+      if (currentUser._id && likedBy === currentUser._id) return;
+
+      setPosts(prev => prev.map(post => {
+        if (post._id === postId) {
+          return {
+            ...post,
+            likesCount: action === 'like' ? post.likesCount + 1 : Math.max(0, post.likesCount - 1)
+          }
+        }
+        return post;
+      }))
+    }
+  }, [postLikeEvent, currentUser._id]);
+
+  useEffect(() => {
+    if (newCommentEvent) {
+      const { postId, comment } = newCommentEvent;
+      if (currentUser._id && comment.owner._id === currentUser._id) return;
+
+      setPosts(prev => prev.map(post => {
+        if (post._id === postId) {
+          return { ...post, commentsCount: post.commentsCount + 1 }
+        }
+        return post;
+      }));
+
+      if (activepostcomment === postId) {
+        setComments(prev => {
+          const currentComments = Array.isArray(prev) ? prev : [];
+          if (currentComments.some(c => c._id === comment._id)) return currentComments;
+          return [...currentComments, comment];
+        });
+      }
+    }
+  }, [newCommentEvent, currentUser._id, activepostcomment]);
+
+  useEffect(() => {
 
     connectSocket();
 
@@ -86,13 +140,15 @@ const HomePage = () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/posts`, {
           method: 'GET',
-          authorization: `Bearer ${Cookie.get('accessToken')}`, // Assuming the access token is stored in a cookie
+          headers: {
+            'Authorization': `Bearer ${Cookie.get('accessToken')}`, // Assuming the access token is stored in a cookie
+          },
           credentials: 'include', // Include cookies for authentication
         });
         if (response.ok) {
 
           const data = await response.json();
-          console.log("Fetched posts:", data.data);
+         
           setPosts(data.data);
 
         } else {
@@ -114,11 +170,13 @@ const HomePage = () => {
         const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/current-user`, {
           method: 'GET',
           credentials: 'include',
-          authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
+          headers: {
+            'Authorization': `Bearer ${Cookie.get('accessToken')}`, // Include cookies for authentication
+          },
         });
         if (response.ok) {
           const data = await response.json();
-          console.log("Current user:", data.data);
+         
           setCurrentUser(data.data);
           setCUser(data.data)
         } else {
@@ -137,13 +195,15 @@ const HomePage = () => {
         const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/getUsersForSuggestion`, {
           method: 'GET',
           credentials: 'include',
-          authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
+          headers: {
+            'Authorization': `Bearer ${Cookie.get('accessToken')}`, // Include cookies for authentication
+          },
         });
 
         if (response.ok) {
 
           const data = await response.json();
-          console.log("Fetched suggestions:", data.data);
+          
           setSuggestions(data.data);
 
         } else {
@@ -163,12 +223,14 @@ const HomePage = () => {
         const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/follows/getFollowList`, {
           method: 'GET',
           credentials: 'include',
-          authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
+          headers: {
+            'Authorization': `Bearer ${Cookie.get('accessToken')}`, // Include cookies for authentication
+          },
         });
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Fetched follow list:", data.data);
+          
           setFollow_List(data.data);
 
         } else {
@@ -189,12 +251,12 @@ const HomePage = () => {
         const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/likes/posts`, {
           method: 'GET',
           credentials: 'include',
-          authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
+          headers: { 'Authorization': `Bearer ${Cookie.get('accessToken')}` }, // Include cookies for authentication
         });
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Fetched liked posts:", data.data);
+         
           setPostsLikes(data.data);
         } else {
           console.error("Failed to fetch liked posts");
@@ -211,13 +273,6 @@ const HomePage = () => {
 
   }, []);
 
-  useEffect(() => {
-    console.log("Followed List updated:", follow_List);
-    console.log("Liked Posts : ", postsLikes);
-
-  }, [follow_List, postsLikes]);
-
-
 
 
 
@@ -230,12 +285,13 @@ const HomePage = () => {
       const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/getAllUsers`, {
         method: 'GET',
         credentials: 'include',
-        authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
+        headers: {
+          'Authorization': `Bearer ${Cookie.get('accessToken')}`,
+        },// Include cookies for authentication
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Fetched users:", data.data);
         setUsers(data.data);
       } else {
         console.error("Failed to fetch users");
@@ -255,13 +311,15 @@ const HomePage = () => {
       const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/follows/${userId}`, {
         method: 'POST',
         credentials: 'include',
-        authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
+        headers: {
+          'Authorization': `Bearer ${Cookie.get('accessToken')}`,
+        },// Include cookies for authentication
       });
 
       if (response.ok) {
         const data = await response.json();
         setFollow_List(prev => [...prev, data.data]); // Update follow list state
-        console.log("Followed user:", data.data);
+
         toast.success("User followed successfully!");
       } else {
         console.error("Failed to follow user");
@@ -305,13 +363,14 @@ const HomePage = () => {
       const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/likes/toggle/p/${postId}`, {
         method: 'POST',
         credentials: 'include',
-        authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
+        headers: {
+          'Authorization': `Bearer ${Cookie.get('accessToken')}`,
+        },// Include cookies for authentication
       });
 
       if (response.ok) {
 
         const data = await response.json();
-        console.log("Post liked:", data.data);
 
       } else {
 
@@ -329,7 +388,6 @@ const HomePage = () => {
 
       }
     } catch (error) {
-      console.log("Error liking post:", error);
       toast.error("An error occurred while liking the post.");
 
     }
@@ -338,8 +396,7 @@ const HomePage = () => {
   const handleCommentSubmit = async (e) => {
 
     e.preventDefault();
-
-    console.log("Active Post Comment ID:", activepostcomment);
+ 
 
 
     try {
@@ -347,6 +404,7 @@ const HomePage = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Cookie.get('accessToken')}`,
         },
         body: JSON.stringify({ content: newComment }),
         credentials: 'include',
@@ -355,7 +413,7 @@ const HomePage = () => {
       if (response.ok) {
 
         const data = await response.json();
-        console.log("Comment added:", data.data);
+         
 
         setComments((prev) => [...prev, data.data]);
         setPosts((prevPosts) =>
@@ -381,18 +439,20 @@ const HomePage = () => {
 
   const fetchComments = async (postId) => {
 
-    console.log("Fetching comments for post ID:", postId);
+    
     try {
 
       const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/comments/${postId}`, {
         method: 'GET',
         credentials: 'include',
-
+        headers: {
+          'Authorization': `Bearer ${Cookie.get('accessToken')}`,
+        }, // Include cookies for authentication
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Fetched comments:", data.data);
+        
         setComments(Array.isArray(data.data) ? data.data : []); // assuming your backend returns an array of comments in data.data
       } else {
         setComments([]);
@@ -417,7 +477,9 @@ const HomePage = () => {
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-6">
           {/* Left Sidebar */}
-          <LeftSidebar />
+          <div className="hidden md:block">
+            <LeftSidebar />
+          </div>
           {/* Main Feed */}
           <div className="flex-1">
             {/* Create Post */}
@@ -676,7 +738,7 @@ const HomePage = () => {
           )}
 
           {/* Right Sidebar */}
-          <div className="w-full md:w-80 flex-shrink-0">
+          <div className="hidden lg:block w-80 flex-shrink-0">
             <div className="bg-white rounded-lg shadow p-4 sticky top-20">
               <h3 className="font-semibold text-gray-700 mb-4">People you may know</h3>
 
@@ -721,6 +783,7 @@ const HomePage = () => {
           </div>
         </div>
       </div>
+      <MobileNav />
     </div>
   );
 };

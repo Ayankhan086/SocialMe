@@ -38,8 +38,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
     const { fullName, email, username, password } = req.body
-
-    console.log("email: ", email);
+ 
 
     if (
         [fullName, email, username, password].some((field) => field?.trim() === "")
@@ -53,8 +52,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     if (existedUser) {
         throw new ApiError(409, "User with email or username already exists")
-    }
-    console.log(req.files);
+    } 
 
     // const avatarLocalPath = req.files?.avatar[0]?.path;
     // //const coverImageLocalPath = req.files?.coverImage[0]?.path;
@@ -109,8 +107,7 @@ const loginUser = asyncHandler(async (req, res) => {
     //access and referesh token
     //send cookie
 
-    const { email, password } = req.body
-    console.log(email);
+    const { email, password } = req.body 
 
     if (!email) {
         throw new ApiError(400, " email is required")
@@ -142,7 +139,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
     }
 
     return res
@@ -176,7 +174,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: false,
+        sameSite: "lax"
     }
 
     return res
@@ -212,7 +211,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
         const options = {
             httpOnly: true,
-            secure: true
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
         }
 
         const { accessToken, newRefreshToken } = await generateAccessAndRefereshTokens(user._id)
@@ -372,8 +372,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
     const { fullName, username, email } = req.body
-
-    console.log(fullName, username, email);
+ 
 
 
     if (!fullName && !username && !email) {

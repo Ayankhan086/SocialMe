@@ -9,9 +9,12 @@ export const SocketProvider = ({ children }) => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const socketRef = useRef(null);
   const [newMessages, setNewMessages] = useState(null)
+  const [newFollower, setNewFollower] = useState(null);
+  const [newPost, setNewPost] = useState(null);
+  const [postLikeEvent, setPostLikeEvent] = useState(null);
+  const [newCommentEvent, setNewCommentEvent] = useState(null);
 
   useEffect(()=>{
-      console.log("New Messages ", newMessages);
     },[newMessages])
 
   const connectSocket = () => {
@@ -23,7 +26,8 @@ export const SocketProvider = ({ children }) => {
     }
 
     if (!socketRef.current) {
-      socketRef.current = io("http://localhost:8000", {
+      const serverUrl = import.meta.env.VITE_APP_SERVER_URL.replace("/api/v1", "");
+      socketRef.current = io(serverUrl, {
         withCredentials: true,
         autoConnect: false,
         query: { userId },
@@ -35,26 +39,31 @@ export const SocketProvider = ({ children }) => {
 
       // Setup event listeners only once
     }
-    socketRef.current.on("connect", () => {
-      console.log("Socket connected:", socketRef.current?.id);
-    });
-
-    socketRef.current.on("connect_error", (err) => {
-      console.log('Connection error:', err.message);
-    });
-
-    socketRef.current.on("disconnect", () => {
-      console.log("Socket disconnected");
-    });
 
     socketRef.current.on("getOnlineUsers", (userIds) => {
-      console.log("Online users updated:", userIds);
+    
       setOnlineUsers(userIds);
     });
 
     socketRef.current.on("newMessage", (message) => {
       setNewMessages(message);
     })
+
+    socketRef.current.on("newFollower", (data) => {
+      setNewFollower(data);
+    });
+
+    socketRef.current.on("newPost", (post) => {
+      setNewPost(post);
+    });
+
+    socketRef.current.on("postLikeToggled", (data) => {
+      setPostLikeEvent(data);
+    });
+
+    socketRef.current.on("newComment", (data) => {
+      setNewCommentEvent(data);
+    });
 
     
 
@@ -87,7 +96,11 @@ export const SocketProvider = ({ children }) => {
         disconnectSocket,
         socket: socketRef,
         onlineUsers,
-        newMessages
+        newMessages,
+        newFollower,
+        newPost,
+        postLikeEvent,
+        newCommentEvent
       }}
     >
       {children}

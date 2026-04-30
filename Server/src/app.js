@@ -9,7 +9,7 @@ const server = http.createServer(app)
 
 const io = new Server(server, {
   cors: {
-    origin: ["https://social-me-n9nv.vercel.app", "http://localhost:5173"],
+    origin: process.env.CORS_ORIGIN === "*" ? "*" : process.env.CORS_ORIGIN?.split(","),
     credentials: true,
     allowedHeaders: ["cookie", "authorization"]
   },
@@ -18,7 +18,7 @@ const io = new Server(server, {
 
 app.use(cors(
   {
-    origin: ["https://social-me-n9nv.vercel.app", "http://localhost:5173"],
+    origin: process.env.CORS_ORIGIN === "*" ? "*" : process.env.CORS_ORIGIN?.split(","),
     credentials: true
   }
 ))
@@ -63,8 +63,7 @@ app.use('/', (req, res) => {
   })
 })
 
-app.use((req, res, next) => {
-  console.log("Incoming headers:", req.headers);
+app.use((req, res, next) => { 
   next();
 });
 
@@ -85,26 +84,22 @@ const userSocketMap = {};
 const mainNamespace = io.of("/");
 
 try {
-  mainNamespace.on("connection", (socket) => {
-    console.log("New connection:", socket.id);
+  mainNamespace.on("connection", (socket) => { 
 
-    const userId = socket.handshake.query.userId;
-    console.log("User ID:", userId);
+    const userId = socket.handshake.query.userId; 
 
     if (userId && userId !== "undefined") {
       if (!userSocketMap[userId]) {
         userSocketMap[userId] = new Set();
       }
       userSocketMap[userId].add(socket.id);
-      console.log("Online users:", Object.keys(userSocketMap));
-
+       
       // Send online users to all connected clients
       mainNamespace.emit("getOnlineUsers", Object.keys(userSocketMap));
     }
 
     // Moved disconnect outside the else block
-    socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.id);
+    socket.on("disconnect", () => { 
 
       if (userId && userSocketMap[userId]) {
         userSocketMap[userId].delete(socket.id);

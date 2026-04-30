@@ -5,6 +5,7 @@ import image from "../assets/images/image.svg"
 import { Toaster, toast } from 'react-hot-toast';
 import { SocketContext } from '../components/SocketContext';
 import Cookie from 'js-cookie';
+import MobileNav from '../components/MobileNav';
 
 const MessagesPage = () => {
 
@@ -15,7 +16,7 @@ const MessagesPage = () => {
     const [newTextMessage, setNewTextMessage] = useState('');
     const [newImage, setNewImage] = useState(null);
     const [currentUser, setCurrentUser] = useState({})
-    const { onlineUsers, newMessages } = useContext(SocketContext)
+    const { onlineUsers, newMessages, newFollower } = useContext(SocketContext)
     const [showOnlineOnly, setShowOnlineOnly] = useState(false);
 
     const handleSendMessage = async (e) => {
@@ -24,7 +25,7 @@ const MessagesPage = () => {
 
         if (!newTextMessage.trim() && !newImage) return;
 
-        console.log(newTextMessage);
+      
 
 
         const formdata = new FormData();
@@ -34,8 +35,7 @@ const MessagesPage = () => {
             formdata.append("image", newImage)
         }
 
-        console.log(formdata.text);
-
+        
 
         try {
 
@@ -44,12 +44,15 @@ const MessagesPage = () => {
             const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/messages/send/${userId}`, {
                 method: "POST",
                 body: formdata,
-                credentials: "include"
+                credentials: "include",
+                headers: {
+                    'Authorization': `Bearer ${Cookie.get('accessToken')}`
+                }
             })
 
             if (response.ok) {
                 const data = await response.json()
-                console.log("Message Sent : ", data.data);
+            
                 setMessages(prev => [...prev, data.data])
                 toast.success("Message Sent.")
             }
@@ -58,7 +61,7 @@ const MessagesPage = () => {
             setNewImage(null);
 
         } catch (error) {
-            console.log("Error Ocurred  while sending message : ", error);
+            console.error("Error Ocurred  while sending message : ", error);
         }
 
     };
@@ -69,12 +72,14 @@ const MessagesPage = () => {
             try {
                 const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/current-user`, {
                     method: 'GET',
-                    credentials: 'include', 
-authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
+                    credentials: 'include',
+                    headers: {
+                        'Authorization': `Bearer ${Cookie.get('accessToken')}`, // Include cookies for authentication
+                    },
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("Current user:", data.data);
+                    
                     setCurrentUser(data.data);
                 } else {
                     console.error("Failed to fetch current user");
@@ -93,19 +98,22 @@ authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for auth
                 const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/messages/users`, {
 
                     method: "GET",
-                    credentials: "include"
+                    credentials: "include",
+                    headers: {
+                        'Authorization': `Bearer ${Cookie.get('accessToken')}`
+                    }
 
                 })
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("Users : ", data.data);
+                     
                     setConversations(data.data)
                 }
 
 
             } catch (error) {
-                console.log("Error happen while fetching users.", error);
+        
             }
         }
         getUserforConversations();
@@ -113,7 +121,30 @@ authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for auth
         
 
 
+
     }, [])
+
+    useEffect(() => {
+        if (newFollower) {
+            const getUserforConversations = async () => {
+                try {
+                    const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/messages/users`, {
+                        method: "GET",
+                        credentials: "include",
+                        headers: {
+                            'Authorization': `Bearer ${Cookie.get('accessToken')}`
+                        }
+                    })
+                    if (response.ok) {
+                        const data = await response.json();
+                        setConversations(data.data)
+                    }
+                } catch (error) {
+                }
+            }
+            getUserforConversations();
+        }
+    }, [newFollower])
 
 
     const getmessages = async (userId) => {
@@ -121,17 +152,20 @@ authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for auth
 
             const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/messages/${userId}`, {
                 method: 'GET',
-                credentials: "include"
+                credentials: "include",
+                headers: {
+                    'Authorization': `Bearer ${Cookie.get('accessToken')}`
+                }
             })
 
             if (response.ok) {
                 const data = await response.json()
-                console.log("Messages : ", data.data);
+                 
                 setMessages(data.data)
             }
 
         } catch (error) {
-            console.log("Error while getting messaages", error);
+             
         }
     }
 
@@ -154,10 +188,7 @@ authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for auth
             });
         }
     }, [newMessages, activeConversation]);
-
-    useEffect(() => {
-        console.log("Neww Messages ", messages);
-    }, [messages])
+ 
 
     const messagesEndRef = useRef(null);
 
@@ -173,10 +204,12 @@ authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for auth
             <Navbar />
             <div className="max-w-6xl mx-auto px-4 py-6">
                 <div className="flex flex-col md:flex-row gap-6">
-                    <LeftSidebar />
+                    <div className="hidden md:block">
+                        <LeftSidebar />
+                    </div>
                     {/* Main messages content */}
-                    <div className="flex-1 bg-white rounded-lg shadow overflow-hidden">
-                        <div className="flex h-[calc(100vh-120px)]">
+                    <div className="flex-1 bg-white rounded-lg shadow overflow-hidden mb-16 md:mb-0">
+                        <div className="flex h-[calc(100vh-180px)] md:h-[calc(100vh-120px)]">
                             {/* Conversations list */}
                             <div className={`${activeConversation ? 'hidden md:block md:w-1/3' : 'w-full'} border-r border-gray-200`}>
 
@@ -343,6 +376,7 @@ authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for auth
                     </div>
                 </div>
             </div>
+        <MobileNav />
         </div>
     );
 };

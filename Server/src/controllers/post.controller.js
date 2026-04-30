@@ -22,7 +22,7 @@ const createPost = asyncHandler(async (req, res) => {
         if (!video?.url) {
             throw new ApiError(400, "Error uploading video file");
         }
-        console.log("Video uploaded successfully:", video.url);
+      
     }
 
     // Handle image upload if present
@@ -32,7 +32,7 @@ const createPost = asyncHandler(async (req, res) => {
         if (!image?.url) {
             throw new ApiError(400, "Error uploading image");
         }
-        console.log("Image uploaded successfully:", image.url);
+        
     }
 
     const post = await Post.create({
@@ -44,8 +44,15 @@ const createPost = asyncHandler(async (req, res) => {
         owner
     });
 
+    const populatedPost = await Post.findById(post._id).populate("owner", "username avatar");
+
+    const io = req.app.get("io");
+    if (io) {
+        io.emit("newPost", populatedPost);
+    }
+
     return res.status(201).json(
-        new ApiResponse(201, post, "Post created successfully")
+        new ApiResponse(201, populatedPost, "Post created successfully")
     );
 });
 

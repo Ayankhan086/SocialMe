@@ -35,9 +35,7 @@ const SignUpPage = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 }
-            });
-
-            console.log('Sending data:', formData);
+            }); 
 
 
             const responseData = await response.json();

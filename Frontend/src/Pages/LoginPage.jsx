@@ -32,7 +32,7 @@ const LoginPage = () => {
     e.preventDefault();
     try {
 
-      console.log("Submitting login with:", formData);
+     
       // Send a POST request to the login endpoint
 
 
@@ -55,8 +55,9 @@ const LoginPage = () => {
         
 
         if (data.data.accessToken) {
-          cookie.set("accessToken", data.data.accessToken, { expires: 7, secure: true }); // Store token in cookie
-          // cookie.set("CurrentUserId", data.data.user._id, { expires: 7, secure: true })
+          const isSecure = window.location.protocol === "https:";
+          cookie.set("accessToken", data.data.accessToken, { expires: 7, secure: isSecure }); // Store token in cookie
+          cookie.set("CurrentUserId", data.data.user._id, { expires: 7, secure: isSecure });
         }
 
         connectSocket();
@@ -71,7 +72,7 @@ const LoginPage = () => {
     } catch (error) {
 
       toast.error("Login failed. Please try again.");
-      console.log("Error : ", error);
+      
 
 
     }

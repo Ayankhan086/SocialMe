@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import { Toaster, toast } from 'react-hot-toast';
 import image from "../../src/assets/images/image.svg"
 import Cookie from 'js-cookie';
+import MobileNav from '../components/MobileNav';
 
 const SettingsPage = () => {
 
@@ -40,13 +41,15 @@ const SettingsPage = () => {
       const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/update-account`, {
         method: "POST",
         credentials: "include",
-        body: formdata
+        body: formdata,
+        headers: {
+          'Authorization': `Bearer ${Cookie.get('accessToken')}` // Include cookies for authentication
+        }
       });
 
       if (response.ok) {
 
-        const data = await response.json();
-        console.log(" User detail Updated ", data.data);
+        const data = await response.json(); 
 
         setFullName(data.data.fullName)
         setUsername(data.data.username)
@@ -55,11 +58,9 @@ const SettingsPage = () => {
         toast.success("Profile Successfully Updated.")
 
       }
-      else {
-        console.log("some error caused");
+      else { 
       }
-    } catch (error) {
-      console.log("error", error);
+    } catch (error) { 
     }
   };
 
@@ -78,18 +79,19 @@ const SettingsPage = () => {
       const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/avatar`, {
         method: "POST",
         credentials: "include",
-        body: formdata
+        body: formdata,
+        headers: {
+          'Authorization': `Bearer ${Cookie.get('accessToken')}` // Include cookies for authentication
+        }
       })
 
       if (response.ok) {
-        const data = await response.json();
-        console.log("Avatar Uploaded. ", data.data);
+        const data = await response.json(); 
         setNewAvatar(null)
         toast.success("Avatar uploaded Successfully.")
       }
 
-    } catch (error) {
-      console.log("Error while uploading Avatar", error);
+    } catch (error) { 
     }
   }
 
@@ -99,12 +101,13 @@ const SettingsPage = () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/current-user`, {
           method: 'GET',
-          credentials: 'include', 
-authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for authentication
+          credentials: 'include',
+          headers: {
+            'Authorization': `Bearer ${Cookie.get('accessToken')}` // Include cookies for authentication
+          }
         });
         if (response.ok) {
-          const data = await response.json();
-          console.log("Current user:", data.data);
+          const data = await response.json(); 
 
           setFullName(data.data.fullName)
           setUsername(data.data.username)
@@ -135,7 +138,9 @@ authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for auth
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-6">
           {/* Left sidebar (same as homepage) */}
-          <LeftSidebar />
+          <div className="hidden md:block">
+            <LeftSidebar />
+          </div>
           {/* Main settings content */}
           <div className="flex-1">
             <div className="bg-white rounded-lg shadow p-6">
@@ -236,6 +241,7 @@ authorization: `Bearer ${Cookie.get('accessToken')}`,// Include cookies for auth
           </div>
         </div>
       </div>
+      <MobileNav />
     </div>
   );
 };

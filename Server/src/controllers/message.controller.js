@@ -20,9 +20,7 @@ async function getUsersForSidebar(req, res) {
                 { following: myId }
             ]
         });
-
-        console.log(follows);
-
+ 
         const userIds = new Set();
         follows.forEach(follow => {
             if (follow.follower.toString() !== myId.toString()) {

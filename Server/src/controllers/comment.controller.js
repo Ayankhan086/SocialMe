@@ -7,7 +7,7 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 const getPostComments = asyncHandler(async (req, res) => {
     //TODO: get all comments for a post
     const {postId} = req.params
-    console.log("Fetching comments for post:", postId);
+     
 
     const comments = await Comment.aggregate([
         {
@@ -43,8 +43,7 @@ const getPostComments = asyncHandler(async (req, res) => {
         throw new ApiError(404, "No comments found for this post")
     }
 
-    console.log("Comments fetched successfully:", comments);
-
+     
     res.status(200).json(new ApiResponse(200, comments, "Comments fetched successfully"))
 
 })
@@ -68,6 +67,13 @@ const addComment = asyncHandler(async (req, res) => {
 
     if (!comment) {
         throw new ApiError(500, "Failed to add comment")
+    }
+
+    const populatedComment = await Comment.findById(comment._id).populate("owner", "username profilePicture avatar");
+
+    const io = req.app.get("io");
+    if (io) {
+        io.emit("newComment", { postId, comment: populatedComment });
     }
 
     res.status(201).json(new ApiResponse(201, comment, "Comment added successfully"))
