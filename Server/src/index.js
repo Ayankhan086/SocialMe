@@ -6,10 +6,15 @@ dotenv.config({
     path: './.env'
 })
 
+console.log("Starting server...");
+console.log("Connecting to MongoDB...");
+
 connectDB()
 .then(() => {
-    server.listen(process.env.PORT || 8000, "0.0.0.0", () => {
-         console.log(`Server is running on port ${process.env.PORT || 8000} and accessible on the local network`);
+    console.log("MongoDB connection successful!");
+    const port = process.env.PORT || 8000;
+    server.listen(port, "0.0.0.0", () => {
+         console.log(`Server is running on port ${port} and accessible on the local network`);
     })
 })
 .catch((err) => {
