@@ -39,6 +39,7 @@ const LoginPage = () => {
       const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/users/login`, {
         method: 'POST',
         body: JSON.stringify(formData),
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         }
